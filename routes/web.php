@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AngularAPI;
 use App\Http\Controllers\myBlog\loginAndRegister;
 use App\Http\Controllers\angularnewdemo\api;
+use App\Http\Controllers\myBlog\FrontendController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -23,7 +24,7 @@ Route::fallback(function(){
 Route::get('/', function () {
     return view('welcome');
 });
- 
+
 //angular data insert,add,delete,view start
 Route::group(['prefix'=>'/angularAPI'],function(){
 Route::post("/addangularData",[AngularAPI::class, 'addAngular_data']);
@@ -37,9 +38,9 @@ Route::put("/updateangularData",[AngularAPI::class, 'UpdateAngular_data']);
 Route::get('/viewform', function () {
     return view('myform');
 });
-  
 
- 
+
+
 
 
 
@@ -49,16 +50,27 @@ Route::get('/viewform', function () {
 Route::group(['prefix'=>'/myblog','middleware' => 'myblog'],function(){
   Route::post("/newRegister",[loginAndRegister::class, 'userRegister']);
   Route::post("/loginVerify",[loginAndRegister::class, 'loginVerify']);
-});  
+  Route::get("/homevideolist",[FrontendController::class, 'homevideolist']);
+  Route::get("/gallery",[FrontendController::class, 'gallery']);
+  Route::get("/countrylist",[FrontendController::class, 'countrylist']);
+  Route::post("/contactform",[FrontendController::class, 'contactform']);
+  Route::get("/headersearch",[FrontendController::class, 'headersearch']);
+  Route::get("/allblogdata",[FrontendController::class, 'allblogdata']);
+});
+
 // ,'middleware' => 'myblogloggedin'
 Route::group(['prefix'=>'/myblog/access','middleware' => 'myblogloggedin'],function(){
+
+  Route::post("/addvideolist",[api::class, 'addvideolist']);
+  Route::get("/viewallvideolist",[api::class, 'viewallvideolist']);
+  Route::delete("/deletevideo/{id}",[api::class, 'deletevideo']);
+  Route::post("/updatevideo",[api::class, 'updatevideo']);
   Route::post("/demotest",[api::class, 'index']);
   Route::get("/alldata",[api::class, 'viewalldata']);
   Route::get("/usersearch/{id}",[api::class, 'usersearch']);
-  Route::delete("/userdelete/{id}",[api::class, 'userdelete']);
+  Route::delete("/userdelete",[api::class, 'userdelete']);
   Route::post("/userupdate",[api::class, 'userupdate']);
   Route::get("/viewalltbldata",[api::class, 'viewalltbldata']);
-
   Route::post("/uploadmultiples",[api::class, 'uploadmultiples']);
   Route::get("/viewallmultidata",[api::class, 'viewallmultidata']);
   Route::get("/multiusersearch/{id}",[api::class, 'multiusersearch']);
@@ -66,7 +78,6 @@ Route::group(['prefix'=>'/myblog/access','middleware' => 'myblogloggedin'],funct
   Route::get("/logout",[loginAndRegister::class, 'logout']);
 });
 //myBloge data insert,add,delete,view end
- 
 
 
 
@@ -75,7 +86,8 @@ Route::group(['prefix'=>'/myblog/access','middleware' => 'myblogloggedin'],funct
 
 
 
-  
+
+
 //newdemo data insert,add,delete,view start
 Route::group(['prefix'=>'/newdemo','middleware' => 'newdemo'],function(){
   Route::get("/viewallmultidata",[api::class, 'viewallmultidata']);
