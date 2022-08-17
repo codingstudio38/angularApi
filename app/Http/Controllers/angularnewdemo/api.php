@@ -13,19 +13,19 @@ use App\Models\myBlog\myblog_logindetails_tbl;
 
 class api extends Controller
 {
-     
- 
-   
-  
+
+
+
+
      public function index(Request $request)
     {
-        $newUser = new newdemo_tbl; 
+        $newUser = new newdemo_tbl;
         $newUser->user_agent=$request->user_agent;
         $newUser->email=$request->email;
-        $newUser->password=Hash::make($request->password);
-        $newUser->photo='na'; 
+        $newUser->password=$request->password;
+        $newUser->photo='na';
         $result = $newUser->save();
-        $last_id = $newUser->id; 
+        $last_id = $newUser->id;
         if($request->hasFile('profilePic')) {
             $fileName = $request->file('profilePic')->getClientOriginalName();
             $file_extension = $request->file('profilePic')->extension();
@@ -35,12 +35,12 @@ class api extends Controller
                 $userPhoto = newdemo_tbl::find($last_id);
                 $userPhoto->photo=$file_Newname;
                 $Photoresult= $userPhoto->save();
-                if($Photoresult){ 
+                if($Photoresult){
                     return response()->json([
                     'user' => newdemo_tbl::find($last_id),
                     'status' => 200,
                     'message' => 'Successfully Created.',
-                    ]); 
+                    ]);
                     exit;
                 } else {
                     if(\File::exists(public_path('/newdemo/uploadFiles/'.$file_Newname))){
@@ -50,7 +50,7 @@ class api extends Controller
                     return response()->json([
                     'status' => 400,
                     'message' => 'Failed To File Upload. Try again..!!',
-                    ]); 
+                    ]);
                     exit;
                 }
             } else {
@@ -61,24 +61,24 @@ class api extends Controller
                 return response()->json([
                     'status' => 400,
                     'message' => 'Failed To Move File. Try again..!!',
-                    ]); 
+                    ]);
                     exit;
                 }
             }
     }
 
- 
+
     public function viewalldata(Request $request)
     {
         $check = newdemo_tbl::count();
         if($check > 0){
-        $angulardata = newdemo_tbl::select('id','email')->orderBy('id', 'DESC')->get(); 
+        $angulardata = newdemo_tbl::select('id','email')->orderBy('id', 'DESC')->get();
             if($angulardata){
                     return response()->json([
                     'alldata' =>$angulardata,
                     'status' => 200,
                     'message' => 'Records Successfully Fatched..',
-                    ]); 
+                    ]);
                     exit;
                 } else {
                     return response()->json([
@@ -100,15 +100,15 @@ class api extends Controller
     public function viewalltbldata(Request $request)
     {
         $check = newdemo_tbl::count();
-        if($check > 0){   
-        $angulardata = newdemo_tbl::orderBy('id', 'DESC')->paginate(5); 
+        if($check > 0){
+        $angulardata = newdemo_tbl::orderBy('id', 'DESC')->paginate(5);
             if($angulardata){
                     return response()->json([
                     'alldata' =>$angulardata,
                     'total'=> $check,
                     'status' => 200,
                     'message' => 'Records Successfully Fatched..',
-                    ]); 
+                    ]);
                     exit;
                 } else {
                     return response()->json([
@@ -177,6 +177,7 @@ class api extends Controller
             $userdata = newdemo_tbl::where('id',$updateid)->first();
             $upateuser = newdemo_tbl::find($updateid);
             $upateuser->email=$request->email;
+            $upateuser->password=$request->password;
             $upateuser->user_agent=$request->user_agent;
             $update= $upateuser->save();
             if($update){
@@ -189,7 +190,7 @@ class api extends Controller
                 if($file->move('newdemo/uploadFiles',$file_Newname)){
                     $upateuser->photo=$file_Newname;
                     $Photoresult= $upateuser->save();
-                    if($Photoresult){ 
+                    if($Photoresult){
                         if(\File::exists(public_path('/newdemo/uploadFiles/'.$request->oldfile))){
                             \File::delete(public_path('/newdemo/uploadFiles/'.$request->oldfile));
                         }
@@ -197,7 +198,7 @@ class api extends Controller
                         'user' => $userdata,
                         'status' => 200,
                         'message' => 'All data successfully uploaded.',
-                        ]); 
+                        ]);
                         exit;
                     } else {
                         if(\File::exists(public_path('/newdemo/uploadFiles/'.$file_Newname))){
@@ -206,14 +207,14 @@ class api extends Controller
                         return response()->json([
                         'status' => 400,
                         'message' => 'Records has been successfully uploaded. Failed to file upload..!!',
-                        ]); 
+                        ]);
                         exit;
                     }
                 } else {
                     return response()->json([
                         'status' => 400,
                         'message' => 'Records has been successfully uploaded. Failed to move file..!!',
-                        ]); 
+                        ]);
                         exit;
                     }
                 } else {
@@ -221,7 +222,7 @@ class api extends Controller
                     'user' => $userdata,
                     'status' => 200,
                     'message' => 'Successfully uploaded..',
-                    ]); 
+                    ]);
                     exit;
                 }
             } else {
@@ -236,12 +237,12 @@ class api extends Controller
                 'userid' =>$updateid,
                 'status' => 400,
                 'message' => 'Something is wrong..!!',
-            ]); 
+            ]);
             exit;
         }
     }
 
- 
+
 
     public function uploadmultiples(Request $request){
         $customer = [
@@ -260,7 +261,7 @@ class api extends Controller
                 $extension = $file->extension();
                 $size =  $file->getSize();
                 $file_Rname = "multiple_".rand(11111, 99999)."_".$size.".".$extension;
-                $path = public_path().'/newdemo/upload-Multiples/'.$file_Rname;   
+                $path = public_path().'/newdemo/upload-Multiples/'.$file_Rname;
                 $file->move('newdemo/upload-Multiples/',$file_Rname);
                 $info = getimagesize($path);
                 if ($info['mime'] == 'image/jpeg') {
@@ -277,7 +278,7 @@ class api extends Controller
                 $files_name[$key] = $file_Rname;
                 $files_index[] = $key;
             }
-        }  
+        }
         foreach($request->name as $key => $val) {
             if(in_array($key,$files_index)){
                 $alldata = [
@@ -295,14 +296,14 @@ class api extends Controller
                     'price' => $request->price[$key],
                     'photo' => null,
                 ];
-            } 
+            }
            $result[] =  DB::table('multiples')->insert($alldata);
         }
         return response()->json([
             'result' => $result,
             'status' => 200,
             'message' => 'Successfully uploaded..',
-        ]); 
+        ]);
         exit;
     }
 
@@ -310,13 +311,13 @@ class api extends Controller
     public function viewallmultidata(Request $request){
         $check = MultiplesUser::count();
         if($check > 0){
-        $allmulti_users = MultiplesUser::orderBy('id', 'DESC')->get(); 
+        $allmulti_users = MultiplesUser::orderBy('id', 'DESC')->get();
             if($allmulti_users){
                 return response()->json([
                 'allmulti_users' =>$allmulti_users,
                 'status' => 200,
                 'message' => 'Records Successfully Fatched..',
-                ]); 
+                ]);
                 exit;
             } else {
                 return response()->json([
@@ -357,7 +358,7 @@ class api extends Controller
             exit;
         }
     }
- 
+
     public function updatemultiples(Request $request){
         $cid=$request->cid;
         $cname=$request->cname;
@@ -378,9 +379,9 @@ class api extends Controller
         DB::table('multiples_user_data')->where('id','=',$cid)->update($user);
         if(!$request->has('photo')){
             if(count($upid)>0)
-            { 
+            {
                 foreach($upid as $ky=>$val)
-                { 
+                {
                     if($upid[$ky] !=""){
                         $data = array(
                             'cid' => $cid,
@@ -405,14 +406,14 @@ class api extends Controller
             }
         } else {
             $images=array();
-            $images_index=array(); 
-            if($files=$request->file('photo')){  
+            $images_index=array();
+            if($files=$request->file('photo')){
                 foreach ($files as $key => $file) {
                     $fileName = $file->getClientOriginalName();
                     $extension = $file->extension();
                     $size =  $file->getSize();
                     $file_Rname = "multiple_".rand(11111, 99999)."_".$size.".".$extension;
-                    $path = public_path().'/newdemo/upload-Multiples/'.$file_Rname;   
+                    $path = public_path().'/newdemo/upload-Multiples/'.$file_Rname;
                     $file->move('newdemo/upload-Multiples/',$file_Rname);
                     $info = getimagesize($path);
                     if ($info['mime'] == 'image/jpeg') {
@@ -454,7 +455,7 @@ class api extends Controller
                         if(in_array($ky,$images_index)){
                             if(\File::exists(public_path('/newdemo/upload-Multiples/'.$old_photo[$ky]))){
                                 \File::delete(public_path('/newdemo/upload-Multiples/'.$old_photo[$ky]));
-                            }   
+                            }
                             $data = array(
                                 'cid' => $cid,
                                 'name' => $name[$ky],
@@ -478,16 +479,134 @@ class api extends Controller
                 return false;
             }
         }
-    } 
+    }
+
+
+
+    public function addvideolist(Request $request){
+        $id=$request->id;
+        $title=$request->title;
+        $link=$request->link;
+        $date=$request->date;
+        $link_href=$request->link_href;
+        if(count($id)>0)
+        {
+            foreach($id as $ky=>$val)
+            {
+                if($id[$ky] !=""){
+                    $data = array(
+                        'title' => $title[$ky],
+                        'link' => $link[$ky],
+                        'date'=> $date[$ky],
+                        'link_href'=> $link_href[$ky]
+                    );
+                    DB::table('videolist')->where('id',$id[$ky])->update($data);
+                } else {
+                    $data = array(
+                        'title' => $title[$ky],
+                        'link' => $link[$ky],
+                        'date'=> $date[$ky],
+                        'link_href'=> $link_href[$ky]
+                    );
+                    DB::table('videolist')->insert($data);
+                }
+            }
+            return true;
+        } else{
+            return false;
+        }
+    }
+
+public function viewallvideolist(Request $request)
+    {
+        $check = DB::table('videolist')->count();
+        if($check > 0){
+        $angulardata = DB::table('videolist')->orderBy('id', 'DESC')->paginate(5);
+            if($angulardata){
+                    return response()->json([
+                    'alldata' =>$angulardata,
+                    'total'=> $check,
+                    'status' => 200,
+                    'message' => 'Records Successfully Fatched..',
+                    ]);
+                    exit;
+                } else {
+                    return response()->json([
+                        'alldata' => null,
+                        'total'=> $check,
+                        'status' => 400,
+                        'message' => 'Failed To Fatched..!!',
+                    ]);
+                    exit;
+                }
+        } else {
+            return response()->json([
+                'check' => $check,
+                'status' => 400,
+                'message' => 'No records found..!!',
+            ]);
+            exit;
+        }
+    }
+
+    public function updatevideo(Request $resquest){
+        $updateid = $resquest->id;
+        $check = DB::table('videolist')->where('id',$updateid)->count();
+        if($check > 0){
+            $data = array(
+                "date"=>$resquest->date,
+                "link"=>$resquest->link,
+                "title"=>$resquest->title
+            );
+            if(DB::table('videolist')->where('id', $updateid) ->update($data)){
+                return response()->json([
+                    'status' => 200,
+                    'message' => 'Records successfully updated.',
+                ]);
+            } else{
+                return response()->json([
+                    'status' => 400,
+                    'message' => 'Nothing for update OR failed to update..!!',
+                ]);
+            }
+        } else {
+            return response()->json([
+                'status' => 400,
+                'message' => 'Record not found..!! Try again.',
+            ]);
+        }
+    }
+
+
+ public function deletevideo(Request $request,$id)
+    {
+         $check = DB::table('videolist')->where('id',$id)->count();
+         if($check > 0){
+            $dalete = DB::table('videolist')->where('id',$id)->delete();
+            return response()->json([
+                'dalete' => $dalete,
+                'status' => 200,
+                'message' => 'Records successfully deleted..',
+            ]);
+            exit;
+         } else {
+            return response()->json([
+                'check' => $check,
+                'status' => 400,
+                'message' => 'No records found..!!',
+            ]);
+            exit;
+             }
+    }
 
 
 
 
 
 
-}   
+
+}
 
 
 
 
-                
