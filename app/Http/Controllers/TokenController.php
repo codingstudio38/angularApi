@@ -29,7 +29,7 @@ class TokenController extends Controller
         return $last_id."|".$token;
     }
     public function deleteToken($request)
-    {
+    {  
         $route = \Request::url();
         $htoken = $request->header('Authorization');
         $ex_token = explode(" ",$htoken);

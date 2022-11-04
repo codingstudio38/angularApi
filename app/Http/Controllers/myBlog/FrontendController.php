@@ -171,7 +171,7 @@ public function allblogdata(Request $request)
 
    $video = DB::table('videolist')->select('title as name','link_href as href_url','link as url','date',DB::raw('(CASE WHEN id = "ok" THEN "video" ELSE "video" END) AS tbl_type'))->get();
    // ->paginate(5);->where("link_href","!=","https://youtu.be/Xp9jKUY_q0Y")->get();
-
+ 
    foreach ($video as $key2 => $row2) {
         array_push($data,$row2);
     }
@@ -193,7 +193,17 @@ public function allblogdata(Request $request)
     } else {
         $cpage = 1;
     }
-    $records= $this->pager($data,10,$cpage); 
+    if(isset($_GET['limit'])){
+        $limit = $request->get('limit');
+        if($limit==0 && $limit==""){
+            $limitis = 10;
+        } else {
+            $limitis = $limit;
+        }
+    } else {
+        $limitis = 10;
+    }
+    $records= $this->pager($data,$limitis,$cpage); 
    return response()->json([
         'status' => 200,
         'alldata' => $records,

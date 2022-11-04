@@ -45,7 +45,7 @@ Route::get('/viewform', function () {
 
 
 
-
+ 
 //myBloge data insert,add,delete,view start ,'middleware' => 'myblog'
 Route::group(['prefix'=>'/myblog','middleware' => 'myblog'],function(){
   Route::post("/newRegister",[loginAndRegister::class, 'userRegister']);
@@ -58,7 +58,7 @@ Route::group(['prefix'=>'/myblog','middleware' => 'myblog'],function(){
   Route::get("/allblogdata",[FrontendController::class, 'allblogdata']);
 });
 
-// ,'middleware' => 'myblogloggedin'
+// ,'middleware' => 'myblogloggedin' 
 Route::group(['prefix'=>'/myblog/access','middleware' => 'myblogloggedin'],function(){
 
   Route::post("/addvideolist",[api::class, 'addvideolist']);

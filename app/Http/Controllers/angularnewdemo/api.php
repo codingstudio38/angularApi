@@ -263,18 +263,18 @@ class api extends Controller
                 $file_Rname = "multiple_".rand(11111, 99999)."_".$size.".".$extension;
                 $path = public_path().'/newdemo/upload-Multiples/'.$file_Rname;
                 $file->move('newdemo/upload-Multiples/',$file_Rname);
-                $info = getimagesize($path);
-                if ($info['mime'] == 'image/jpeg') {
-                    $image = imagecreatefromjpeg($path);
-                } elseif ($info['mime'] == 'image/gif') {
-                    $image = imagecreatefromgif($path);
-                } elseif ($info['mime'] == 'image/png') {
-                    $image = imagecreatefrompng($path);
-                }
-                if (file_exists($path)) {
-                    unlink($path);
-                }
-                imagejpeg($image, $path, 20);
+                // $info = getimagesize($path);
+                // if ($info['mime'] == 'image/jpeg') {
+                //     $image = imagecreatefromjpeg($path);
+                // } elseif ($info['mime'] == 'image/gif') {
+                //     $image = imagecreatefromgif($path);
+                // } elseif ($info['mime'] == 'image/png') {
+                //     $image = imagecreatefrompng($path);
+                // }
+                // if (file_exists($path)) {
+                //     unlink($path);
+                // }
+                // imagejpeg($image, $path, 20);
                 $files_name[$key] = $file_Rname;
                 $files_index[] = $key;
             }
@@ -415,20 +415,36 @@ class api extends Controller
                     $file_Rname = "multiple_".rand(11111, 99999)."_".$size.".".$extension;
                     $path = public_path().'/newdemo/upload-Multiples/'.$file_Rname;
                     $file->move('newdemo/upload-Multiples/',$file_Rname);
-                    $info = getimagesize($path);
-                    if ($info['mime'] == 'image/jpeg') {
-                        $image = imagecreatefromjpeg($path);
-                    } elseif ($info['mime'] == 'image/gif') {
-                        $image = imagecreatefromgif($path);
-                    } elseif ($info['mime'] == 'image/png') {
-                        $image = imagecreatefrompng($path);
-                    }
-                    if (file_exists($path)) {
-                        unlink($path);
-                    }
-                    imagejpeg($image, $path, 20);
-                    $images[$key]=$file_Rname;
-                    $images_index[]=$key;
+                    // $info = getimagesize($path);
+                    // if ($info['mime'] == 'image/jpeg') {
+                    //     $image = imagecreatefromjpeg($path);
+                    //     if (file_exists($path)) {
+                    //         unlink($path);
+                    //     }
+                    //     imagejpeg($image, $path, 20);
+                    //     $images[$key]=$file_Rname;
+                    //     $images_index[]=$key;
+                    // } elseif ($info['mime'] == 'image/gif') {
+                    //     $image = imagecreatefromgif($path);
+                    //     if (file_exists($path)) {
+                    //         unlink($path);
+                    //     }
+                    //     imagejpeg($image, $path, 20);
+                    //     $images[$key]=$file_Rname;
+                    //     $images_index[]=$key;
+                    // } elseif ($info['mime'] == 'image/png') {
+                    //     $image = imagecreatefrompng($path);
+                    //     if (file_exists($path)) {
+                    //         unlink($path);
+                    //     }
+                    //     imagejpeg($image, $path, 20);
+                    //     $images[$key]=$file_Rname;
+                    //     $images_index[]=$key;
+                    // } else {
+
+                    // }
+                    $images[$key] = $file_Rname;
+                    $images_index[] = $key;
                 }
             }
             if(count($name)>0){

@@ -12,6 +12,12 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\TokenController;
 class loginAndRegister extends Controller
 {  
+    private $TokenController=null;
+    private $myblog_logindetails_tbl=null;
+    public function __construct(){
+        $this->TokenController = new TokenController;
+        $this->myblog_logindetails_tbl = new myblog_logindetails_tbl;
+    }
     public function userRegister(Request $request){
     $mailCheck=myblog_register_tbl::where('email',$request->email)->first();
     $phoneCheck=myblog_register_tbl::where('phone',$request->phoneno)->first();
@@ -85,7 +91,7 @@ class loginAndRegister extends Controller
     }
 
     public function loginVerify(Request $request){
-        $loginData= myblog_register_tbl::where('email', $request->emailid)->first();
+         $loginData= myblog_register_tbl::where('email', $request->emailid)->first();
         if (!$loginData || !Hash::check($request->password, $loginData->password)) {
             return response()->json([
                 'status'  => 400,
@@ -106,7 +112,7 @@ class loginAndRegister extends Controller
                 $data->save();
                 return response()->json([
                     'userData'=> $data,
-                    'token'=> TokenController::createToken($request,$loginData->id,$loginData->email),
+                    'token'=> $this->TokenController->createToken($request,$loginData->id,$loginData->email),
                     'status'  => 200,
                     'message' => 'Logged In Successfully..',
                 ]); 
@@ -120,8 +126,8 @@ class loginAndRegister extends Controller
  public function logout(Request $request){
     $route = \Request::url();
     $htoken = $request->header('Authorization');
-    if(myblog_logindetails_tbl::checkAuth($htoken,$route)){
-        TokenController::deleteToken($request);
+    if($this->myblog_logindetails_tbl->checkAuth($htoken,$route)){
+        $this->TokenController->deleteToken($request);
         return response()->json([
             'status' => 200,
             'message' => 'Successfully logged out..',

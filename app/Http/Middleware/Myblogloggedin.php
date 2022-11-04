@@ -17,8 +17,10 @@ class Myblogloggedin
      */
     private $bearer = null;
     private $httpUrl = null; 
+    private $myblog_logindetails_tbl = null; 
     public function __construct(){  
         $this->httpUrl = "http://localhost:4200";
+        $this->myblog_logindetails_tbl = new myblog_logindetails_tbl;
     }
     public function handle(Request $request, Closure $next)
     { 
@@ -33,7 +35,7 @@ class Myblogloggedin
                 exit; 
         } else { 
             if(!$htoken == null){
-                if(!myblog_logindetails_tbl::checkAuth($htoken,$route)) {
+                if(!$this->myblog_logindetails_tbl->checkAuth($htoken,$route)) {
                     return response()->json([
                         'header_token' =>$htoken,
                         'status' => 401,
