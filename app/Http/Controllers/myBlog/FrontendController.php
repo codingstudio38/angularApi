@@ -26,7 +26,7 @@ class FrontendController extends Controller
         $check = DB::table('videolist')->count();
         if($check > 0){
             $data = DB::table('videolist')->orderBy('id', 'DESC')->limit(6)->get();
-            if($data){
+            if($data){ 
                 return response()->json([
                     'allvideos' =>$data,
                     'total'=> $check,
