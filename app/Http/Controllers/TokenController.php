@@ -16,12 +16,12 @@ class TokenController extends Controller
         $new->tokenable_id=$userID;
         $new->email=$userEmail;
         $new->token="-";
-        $new->user_agent=$request->userAgent;
+        $new->user_agent=$request->userAgent; 
         $new->status="Active";
         $result = $new->save();
         $last_id = $new->id;
         $token = Str::random(100)."**".base64_encode($userID."-".$last_id);
-        $new->token= hash('sha256', $token); 
+        $new->token= hash('sha256', $token);  
         $result = $new->save();
         myblog_logindetails_tbl::where('id','!=',$last_id)
         ->where('tokenable_id','=',$userID)
@@ -29,7 +29,7 @@ class TokenController extends Controller
         return $last_id."|".$token;
     }
     public function deleteToken($request)
-    {  
+    {   
         $route = \Request::url();
         $htoken = $request->header('Authorization');
         $ex_token = explode(" ",$htoken);

@@ -8,13 +8,13 @@ use App\Models\myBlog\myblog_logindetails_tbl;
 use Illuminate\Support\Facades\Hash;
 class Myblogloggedin
 {
-    /**
+    /** 
      * Handle an incoming request.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
-     */
+     */ 
     private $bearer = null;
     private $httpUrl = null; 
     private $myblog_logindetails_tbl = null; 

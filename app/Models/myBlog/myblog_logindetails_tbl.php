@@ -6,14 +6,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\myBlog\myblog_logindetails_tbl;
 class myblog_logindetails_tbl extends Model
-{
+{ 
     use HasFactory;
     public $timestamps=false;
     public $table = "myblog_logindetails_tbl";
  
     public function checkAuth($token,$route){
     $ex_token = explode(" ",$token);
-        if(count($ex_token) > 0){
+        if(count($ex_token) > 0){ 
             if(strpos($ex_token[1], '|')){
                 [$ex_id, $ex_token] = explode("|",$ex_token[1],2);
                 $tokendata = myblog_logindetails_tbl::where('id', $ex_id)->first();

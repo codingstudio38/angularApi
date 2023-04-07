@@ -57,7 +57,7 @@ Route::group(['prefix'=>'/myblog','middleware' => 'myblog'],function(){
   Route::get("/headersearch",[FrontendController::class, 'headersearch']);
   Route::get("/allblogdata",[FrontendController::class, 'allblogdata']);
 });
-
+ 
 // ,'middleware' => 'myblogloggedin' 
 Route::group(['prefix'=>'/myblog/access','middleware' => 'myblogloggedin'],function(){
 

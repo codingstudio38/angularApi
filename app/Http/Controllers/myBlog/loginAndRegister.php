@@ -122,7 +122,7 @@ class loginAndRegister extends Controller
     }
 
  
-
+  
  public function logout(Request $request){
     $route = \Request::url();
     $htoken = $request->header('Authorization');
