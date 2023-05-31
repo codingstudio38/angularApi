@@ -33,7 +33,7 @@ class Myblogloggedin
                     'message' => 'HTTP: Access denied..!!',
                 ]); 
                 exit; 
-        } else { 
+        } else {  
             if(!$htoken == null){
                 if(!$this->myblog_logindetails_tbl->checkAuth($htoken,$route)) {
                     return response()->json([

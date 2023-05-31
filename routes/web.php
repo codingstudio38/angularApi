@@ -64,7 +64,7 @@ Route::group(['prefix'=>'/myblog/access','middleware' => 'myblogloggedin'],funct
   Route::post("/addvideolist",[api::class, 'addvideolist']);
   Route::get("/viewallvideolist",[api::class, 'viewallvideolist']);
   Route::delete("/deletevideo/{id}",[api::class, 'deletevideo']);
-  Route::post("/updatevideo",[api::class, 'updatevideo']);
+  Route::post("/updatevideo",[api::class, 'updatevideo']); 
   Route::post("/demotest",[api::class, 'index']);
   Route::get("/alldata",[api::class, 'viewalldata']);
   Route::get("/usersearch/{id}",[api::class, 'usersearch']);

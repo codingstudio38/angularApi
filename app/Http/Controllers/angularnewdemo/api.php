@@ -574,15 +574,15 @@ public function viewallvideolist(Request $request)
                 "link"=>$resquest->link,
                 "title"=>$resquest->title
             );
-            if(DB::table('videolist')->where('id', $updateid) ->update($data)){
+            if(DB::table('videolist')->where('id', $updateid)->update($data)){
                 return response()->json([
                     'status' => 200,
                     'message' => 'Records successfully updated.',
                 ]);
-            } else{
+            } else {
                 return response()->json([
-                    'status' => 400,
-                    'message' => 'Nothing for update OR failed to update..!!',
+                    'status' => 200,
+                    'message' => 'Nothing for update.',// OR failed to update..!!
                 ]);
             }
         } else {
