@@ -10,11 +10,18 @@ use App\Models\newdemo\Multiples;
 use App\Models\newdemo\MultiplesUser;
 use Illuminate\Support\Facades\DB;
 use App\Models\myBlog\myblog_logindetails_tbl;
+use Excel;
+use PDF;
 
+
+use App\Exports\VideoList; 
 class api extends Controller
 {
 
-
+   public function paginateSerial($data)
+    {
+        return $data->perPage() * ($data->currentPage() - 1);
+    }
 
 
      public function index(Request $request)
@@ -616,6 +623,78 @@ public function viewallvideolist(Request $request)
     }
 
 
+
+     public function ExportPDF(Request $request)
+    {
+        try {
+            $page=isset($_GET['page'])?(int)$request->get('page'):0;
+            $limit=isset($_GET['limit'])?(int)$request->get('limit'):0; 
+            $date = date('Y-m-d');
+            $data_qu = DB::table('videolist')->orderBy('id', 'DESC');
+            
+            if($limit <= 0){
+                $data = $data_qu->get();
+            } else {
+                $data = $data_qu->paginate($limit);
+            }
+            
+            $send = [
+            'data'=>$data
+            ];
+            $customPaper = array(0,0,720,1440);
+            $pdf=PDF::loadView('MyPDF',$send)->setPaper('A4','portrait');
+            $pdf->getDomPDF()->set_option("enable_php", true);
+            $pdf->output();
+            $dom_pdf = $pdf->getDomPDF();
+            $canvas = $dom_pdf->get_canvas();
+            $canvas->page_text(40, 20, "Page - {PAGE_NUM} of  {PAGE_COUNT}", null, 11, array(0,0,0));
+            // return $pdf->stream("pdf-file-$date.pdf"); 
+            return $pdf->download("pdf-file-$date.pdf"); 
+            // return view('MyPDF',$send);
+        } catch (\Throwable $error) {
+            return response()->json([
+                'status' => 404,
+                'message' => $error->getMessage(),
+            ],404);
+        }
+    }
+
+
+
+     public function ExportEXCEL(Request $request)
+    {
+        try {
+            $page=isset($_GET['page'])?(int)$request->get('page'):0;
+            $limit=isset($_GET['limit'])?(int)$request->get('limit'):0; 
+            $date = date('Y-m-d');
+            $serial = 0;
+
+            $data_qu = DB::table('videolist');
+            $data_qu->select('id','title')->orderBy('id', 'DESC');
+
+            if($limit <= 0){
+                $data = $data_qu->get();
+
+            } else {
+                $data = $data_qu->paginate($limit);
+                $serial = $this->paginateSerial($data);
+            }
+            
+            $send = [
+            'slno'=>$serial+1,
+            'data'=>$data,
+            ];
+            // dd($data);
+            ob_end_clean();
+            ob_start();
+            return Excel::download(new VideoList($send),"excel-file-$date.xlsx",\Maatwebsite\Excel\Excel::XLSX);
+        } catch (\Throwable $error) {
+            return response()->json([
+                'status' => 404,
+                'message' => $error->getMessage(),
+            ],404);
+        }
+    }
 
 
 

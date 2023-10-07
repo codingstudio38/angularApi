@@ -59,7 +59,7 @@ Route::group(['prefix'=>'/myblog','middleware' => 'myblog'],function(){
 });
  
 // ,'middleware' => 'myblogloggedin' 
-Route::group(['prefix'=>'/myblog/access','middleware' => 'myblogloggedin'],function(){
+Route::group(['prefix'=>'/myblog/access'],function(){
 
   Route::post("/addvideolist",[api::class, 'addvideolist']);
   Route::get("/viewallvideolist",[api::class, 'viewallvideolist']);
@@ -69,15 +69,19 @@ Route::group(['prefix'=>'/myblog/access','middleware' => 'myblogloggedin'],funct
   Route::get("/alldata",[api::class, 'viewalldata']);
   Route::get("/usersearch/{id}",[api::class, 'usersearch']);
   Route::delete("/userdelete",[api::class, 'userdelete']);
-  Route::post("/userupdate",[api::class, 'userupdate']);
+  Route::post("/userupdate",[api::class, 'userupdate']); 
   Route::get("/viewalltbldata",[api::class, 'viewalltbldata']);
   Route::post("/uploadmultiples",[api::class, 'uploadmultiples']);
   Route::get("/viewallmultidata",[api::class, 'viewallmultidata']);
   Route::get("/multiusersearch/{id}",[api::class, 'multiusersearch']);
   Route::post("/updatemultiples",[api::class, 'updatemultiples']);
   Route::get("/logout",[loginAndRegister::class, 'logout']);
+
+  Route::get("/export-pdf",[api::class, 'ExportPDF']);
+  Route::get("/export-excel",[api::class, 'ExportEXCEL']);
+
 });
-//myBloge data insert,add,delete,view end
+//myBloge data insert,add,delete,view end 
 
 
 
