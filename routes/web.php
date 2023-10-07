@@ -16,10 +16,10 @@ use App\Http\Controllers\myBlog\FrontendController;
 |
 */
 Route::fallback(function(){
-  return [
-    'status'=>200,
-    'message'=>"route not found..!!"
-  ];
+   return response()->json([
+              'status' => 404,
+              'message' => "route not found..!!",
+          ],404);
 });
 Route::get('/', function () {
     return view('welcome');
@@ -58,7 +58,7 @@ Route::group(['prefix'=>'/myblog','middleware' => 'myblog'],function(){
   Route::get("/allblogdata",[FrontendController::class, 'allblogdata']);
 });
  
-// ,'middleware' => 'myblogloggedin' 
+//  
 Route::group(['prefix'=>'/myblog/access','middleware' => 'myblogloggedin'],function(){
 
   Route::post("/addvideolist",[api::class, 'addvideolist']);
@@ -76,12 +76,12 @@ Route::group(['prefix'=>'/myblog/access','middleware' => 'myblogloggedin'],funct
   Route::get("/multiusersearch/{id}",[api::class, 'multiusersearch']);
   Route::post("/updatemultiples",[api::class, 'updatemultiples']);
   Route::get("/logout",[loginAndRegister::class, 'logout']);
-
-  Route::get("/export-pdf",[api::class, 'ExportPDF']);
-  Route::get("/export-excel",[api::class, 'ExportEXCEL']);
+  Route::get("/testpdf",[api::class, 'ExportPDF'])->name('pdf_export'); 
+  Route::get("/testxl",[api::class, 'ExportEXCEL'])->name('excel_export');
 
 });
 //myBloge data insert,add,delete,view end 
+
 
 
 

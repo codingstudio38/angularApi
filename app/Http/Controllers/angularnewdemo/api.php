@@ -611,7 +611,7 @@ public function viewallvideolist(Request $request)
                 'status' => 200,
                 'message' => 'Records successfully deleted..',
             ]);
-            exit;
+           
          } else {
             return response()->json([
                 'check' => $check,
@@ -627,6 +627,12 @@ public function viewallvideolist(Request $request)
      public function ExportPDF(Request $request)
     {
         try {
+            // $dalete = DB::table('videolist')->get();
+            // return response()->json([
+            //     'dalete' => $dalete,
+            //     'status' => 200,
+            //     'message' => 'Records successfully deleted..',
+            // ],200);
             $page=isset($_GET['page'])?(int)$request->get('page'):0;
             $limit=isset($_GET['limit'])?(int)$request->get('limit'):0; 
             $date = date('Y-m-d');
@@ -649,13 +655,13 @@ public function viewallvideolist(Request $request)
             $canvas = $dom_pdf->get_canvas();
             $canvas->page_text(40, 20, "Page - {PAGE_NUM} of  {PAGE_COUNT}", null, 11, array(0,0,0));
             // return $pdf->stream("pdf-file-$date.pdf"); 
-            return $pdf->download("pdf-file-$date.pdf"); 
+            return $pdf->download("pdf-file-$date.pdf")->header('Content-Type', 'application/pdf'); 
             // return view('MyPDF',$send);
         } catch (\Throwable $error) {
             return response()->json([
-                'status' => 404,
+                'status' => 500,
                 'message' => $error->getMessage(),
-            ],404);
+            ],500);
         }
     }
 
@@ -684,15 +690,19 @@ public function viewallvideolist(Request $request)
             'slno'=>$serial+1,
             'data'=>$data,
             ];
-            // dd($data);
+            // return response()->json([
+            //     'status' => 200,
+            //     'message' => $send,
+            // ],200);
             ob_end_clean();
             ob_start();
             return Excel::download(new VideoList($send),"excel-file-$date.xlsx",\Maatwebsite\Excel\Excel::XLSX);
+            //->header('Content-Type', 'application/vnd.ms-excel')
         } catch (\Throwable $error) {
             return response()->json([
-                'status' => 404,
+                'status' => 500,
                 'message' => $error->getMessage(),
-            ],404);
+            ],500);
         }
     }
 
