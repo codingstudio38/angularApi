@@ -59,7 +59,7 @@ Route::group(['prefix'=>'/myblog','middleware' => 'myblog'],function(){
 });
  
 // ,'middleware' => 'myblogloggedin' 
-Route::group(['prefix'=>'/myblog/access'],function(){
+Route::group(['prefix'=>'/myblog/access','middleware' => 'myblogloggedin'],function(){
 
   Route::post("/addvideolist",[api::class, 'addvideolist']);
   Route::get("/viewallvideolist",[api::class, 'viewallvideolist']);
