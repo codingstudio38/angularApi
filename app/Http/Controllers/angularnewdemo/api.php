@@ -694,9 +694,12 @@ public function viewallvideolist(Request $request)
      public function ExportEXCEL(Request $request)
     { 
         try {
+            date_default_timezone_set('Asia/Kolkata');
             $page=isset($_GET['page'])?(int)$request->get('page'):0;
             $limit=isset($_GET['limit'])?(int)$request->get('limit'):0; 
-            $date = date('Y-m-d');
+            $micro_date = microtime(true);
+            $micro = sprintf("%02d",($micro_date - floor($micro_date)) * 100);
+            $date = date('YmdHis-'.$micro,$micro_date);
             $serial = 0;
 
             $data_qu = DB::table('videolist');
@@ -716,9 +719,26 @@ public function viewallvideolist(Request $request)
             ];
             ob_end_clean();
             ob_start();
-            return Excel::download(new VideoList($send),"excel-file-$date.xlsx",\Maatwebsite\Excel\Excel::XLSX, [ 'Content-Type'        => 'application/excel', ]);
-            
+            if(Excel::store(new VideoList($send),"excel-file-$date.xlsx",\Maatwebsite\Excel\Excel::XLSX)){
+                return response()->json([
+                    'file_public_url' =>public_path('myBlog/export-excel').'/'."excel-file-$date.xlsx",
+                    'file_url' =>url('myBlog/export-excel').'/'."excel-file-$date.xlsx",
+                    'status' => 200,
+                    'message' => "Success",
+                ],200);
+                // $headers = array( 'Content-Type: application/excel', );
+                // return \Response::download(public_path('myBlog/export-excel').'/'."excel-file-$date.xlsx","excel-file-$date.xlsx",$headers);
+            } else {
+                return response()->json([
+                    'status' => 500,
+                    'message' => "Failed to save file.",
+                ],500);
+            }
+             
         } catch (\Throwable $error) {
+            if(\File::exists(public_path('myBlog/export-excel').'/'."excel-file-$date.xlsx")){
+                \File::delete(public_path('myBlog/export-excel').'/'."excel-file-$date.xlsx");
+            }
             return response()->json([
                 'status' => 500,
                 'message' => $error->getMessage(),
@@ -764,6 +784,46 @@ public function viewallvideolist(Request $request)
     }
 
 
+
+
+
+
+
+
+public function DeleteFile(Request $request)
+    { 
+        try {
+            $filelink=isset($_POST['filelink'])?$request->post('filelink'):"";
+            $deletetype=isset($_POST['deletetype'])?$request->post('deletetype'):""; 
+            $ex_file = explode("/",$filelink);
+            $filename = end($ex_file);
+            if($deletetype=="excelfile"){
+            if(\File::exists(public_path('myBlog/export-excel').'/'.$filename)){
+                    \File::delete(public_path('myBlog/export-excel').'/'.$filename);
+                    return response()->json([
+                        'status' => 200,
+                        'message' => "file successfully deleted",
+                    ],200);
+                } else {
+                    return response()->json([
+                        'status' => 200,
+                        'message' => $filename." file directory not found",
+                    ],200);
+                }
+            } else {
+                 return response()->json([
+                    'status' => 200,
+                    'message' => "nothing for delete.",
+                ],200);
+            }
+        } catch (\Throwable $error) {
+            return response()->json([
+                'status' => 500,
+                'errors' =>$error,
+                'message' => $error->getMessage(),
+            ],500);
+        }
+    }
 
 
 

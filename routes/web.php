@@ -59,7 +59,7 @@ Route::group(['prefix'=>'/myblog','middleware' => 'myblog'],function(){
 });
  
 //  ,'middleware' => 'myblogloggedin'
-Route::group(['prefix'=>'/myblog/access'],function(){
+Route::group(['prefix'=>'/myblog/access','middleware' => 'myblogloggedin'],function(){
 
   Route::post("/addvideolist",[api::class, 'addvideolist']);
   Route::get("/viewallvideolist",[api::class, 'viewallvideolist']);
@@ -77,9 +77,10 @@ Route::group(['prefix'=>'/myblog/access'],function(){
   Route::post("/updatemultiples",[api::class, 'updatemultiples']);
   Route::get("/logout",[loginAndRegister::class, 'logout']);
   Route::get("/testpdff_data",[api::class, 'ExportPDF'])->name('pdf_export_data'); 
-  Route::get("/testxll_data",[api::class, 'ExportEXCEL'])->name('excel_export_data');
+  Route::get("/xl-data-expoert",[api::class, 'ExportEXCEL'])->name('excel_export_data');
+  Route::post("/delete-file",[api::class, 'DeleteFile'])->name('Delete_File');
 
-}); 
+});  
 //myBloge data insert,add,delete,view end 
 
 
