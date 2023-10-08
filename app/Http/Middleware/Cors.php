@@ -18,7 +18,7 @@ class Cors
     {
         $path = explode("/",\Request::url());
         $current_path = end($path);
-        $staticpath = array("pdf-export","excel-export");  
+        $staticpath = array("testpdf","testxl");  
         
         if(in_array($current_path, $staticpath)){ 
             return $next($request);

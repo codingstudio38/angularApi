@@ -627,12 +627,6 @@ public function viewallvideolist(Request $request)
      public function ExportPDF(Request $request)
     {
         try {
-            // $dalete = DB::table('videolist')->get();
-            // return response()->json([
-            //     'dalete' => $dalete,
-            //     'status' => 200,
-            //     'message' => 'Records successfully deleted..',
-            // ],200);
             $page=isset($_GET['page'])?(int)$request->get('page'):0;
             $limit=isset($_GET['limit'])?(int)$request->get('limit'):0; 
             $date = date('Y-m-d');
@@ -665,10 +659,40 @@ public function viewallvideolist(Request $request)
         }
     }
 
+    public function ExportPDFData(Request $request)
+    {
+        try {
+            $page=isset($_GET['page'])?(int)$request->get('page'):0;
+            $limit=isset($_GET['limit'])?(int)$request->get('limit'):0; 
+            $date = date('Y-m-d');
+            $data_qu = DB::table('videolist')->orderBy('id', 'DESC');
+            
+            if($limit <= 0){
+                $data = $data_qu->get();
+            } else {
+                $data = $data_qu->paginate($limit);
+            }
+            
+            $send = [
+            'data'=>$data
+            ];
+            return response()->json([
+                "data"=>$send,
+                'status' => 200,
+                'message' =>"success",
+            ],200);
+        } catch (\Throwable $error) {
+            return response()->json([
+                'status' => 500,
+                'message' => $error->getMessage(),
+            ],500);
+        }
+    }
+
 
 
      public function ExportEXCEL(Request $request)
-    {
+    { 
         try {
             $page=isset($_GET['page'])?(int)$request->get('page'):0;
             $limit=isset($_GET['limit'])?(int)$request->get('limit'):0; 
@@ -690,14 +714,47 @@ public function viewallvideolist(Request $request)
             'slno'=>$serial+1,
             'data'=>$data,
             ];
-            // return response()->json([
-            //     'status' => 200,
-            //     'message' => $send,
-            // ],200);
             ob_end_clean();
             ob_start();
-            return Excel::download(new VideoList($send),"excel-file-$date.xlsx",\Maatwebsite\Excel\Excel::XLSX);
-            //->header('Content-Type', 'application/vnd.ms-excel')
+            return Excel::download(new VideoList($send),"excel-file-$date.xlsx",\Maatwebsite\Excel\Excel::XLSX, [ 'Content-Type'        => 'application/excel', ]);
+            
+        } catch (\Throwable $error) {
+            return response()->json([
+                'status' => 500,
+                'message' => $error->getMessage(),
+            ],500);
+        }
+    }
+
+     public function ExportEXCELData(Request $request)
+    { 
+        try {
+            $page=isset($_GET['page'])?(int)$request->get('page'):0;
+            $limit=isset($_GET['limit'])?(int)$request->get('limit'):0; 
+            $date = date('Y-m-d');
+            $serial = 0;
+
+            $data_qu = DB::table('videolist');
+            $data_qu->select('id','title')->orderBy('id', 'DESC');
+
+            if($limit <= 0){
+                $data = $data_qu->get();
+
+            } else {
+                $data = $data_qu->paginate($limit);
+                $serial = $this->paginateSerial($data);
+            }
+            
+            $send = [
+            'slno'=>$serial+1,
+            'data'=>$data,
+            ];
+            return response()->json([
+                'data'=>$send,
+                'status' => 200,
+                'message' =>"success",
+            ],200);
+           
         } catch (\Throwable $error) {
             return response()->json([
                 'status' => 500,
