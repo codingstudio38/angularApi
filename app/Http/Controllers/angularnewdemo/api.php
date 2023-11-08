@@ -734,7 +734,7 @@ public function viewallvideolist(Request $request)
                     'message' => "Failed to save file.",
                 ],500);
             }
-             
+              
         } catch (\Throwable $error) {
             if(\File::exists(public_path('myBlog/export-excel').'/'."excel-file-$date.xlsx")){
                 \File::delete(public_path('myBlog/export-excel').'/'."excel-file-$date.xlsx");
@@ -825,6 +825,23 @@ public function DeleteFile(Request $request)
         }
     }
 
+
+    public function readxlfile(Request $request)
+    { 
+        try {
+           $file_path = public_path('myBlog/export-excel')."/excel-file-20231108202609-99.xlsx";
+          
+           $data =  Excel::toArray('dd',$file_path);
+           echo "<pre>";
+           print_r(count($data)>0?$data[0]:array());
+        } catch (\Throwable $error) {
+            return response()->json([
+                'status' => 500,
+                'errors' =>$error,
+                'message' => $error->getMessage(),
+            ],500);
+        }
+    }
 
 
 }

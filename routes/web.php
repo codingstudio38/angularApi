@@ -79,13 +79,14 @@ Route::group(['prefix'=>'/myblog/access','middleware' => 'myblogloggedin'],funct
   Route::get("/testpdff_data",[api::class, 'ExportPDF'])->name('pdf_export_data'); 
   Route::get("/xl-data-expoert",[api::class, 'ExportEXCEL'])->name('excel_export_data');
   Route::post("/delete-file",[api::class, 'DeleteFile'])->name('Delete_File');
+  Route::get("/read-xl-file",[api::class, 'readxlfile'])->name('readxlfile');
 
 });  
 //myBloge data insert,add,delete,view end 
 
 
 
-
+ 
 
 
 
