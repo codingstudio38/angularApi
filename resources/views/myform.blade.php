@@ -113,3 +113,8 @@
     </table>
     <button type="submit" class="btn btn-success">Submit</button>
 </form>
+
+
+{{-- php artisan config:cache --}}
+{{-- php artisan config:clear --}}
+{{-- php artisan optimize --}}

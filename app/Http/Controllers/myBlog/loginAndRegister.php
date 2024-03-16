@@ -4,6 +4,7 @@ namespace App\Http\Controllers\myBlog;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\User;
 use App\Models\myBlog\myblog_register_tbl;
 use App\Models\myBlog\myblog_logindetails_tbl;
 use Illuminate\Support\Facades\Hash;
@@ -107,6 +108,8 @@ class loginAndRegister extends Controller
                 ]); 
                 exit;
             } else {  
+             
+                // \Auth::login(User::first());
                 $data = myblog_register_tbl::find($loginData->id);
                 $data->login_check=true;
                 $data->save();

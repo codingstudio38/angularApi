@@ -46,6 +46,7 @@ Route::group(['prefix'=>'/myblog','middleware' => 'myblog'],function(){
   Route::post("/newRegister",[loginAndRegister::class, 'userRegister']);
   Route::post("/loginVerify",[loginAndRegister::class, 'loginVerify']);
 });  
+
 // ,'middleware' => 'myblogloggedin'
 Route::group(['prefix'=>'/myblog/access','middleware' => 'myblogloggedin'],function(){
   Route::post("/demotest",[api::class, 'index']);
@@ -54,6 +55,7 @@ Route::group(['prefix'=>'/myblog/access','middleware' => 'myblogloggedin'],funct
   Route::delete("/userdelete/{id}",[api::class, 'userdelete']);
   Route::post("/userupdate",[api::class, 'userupdate']);
   Route::get("/viewalltbldata",[api::class, 'viewalltbldata']);
+  Route::get("/viewallvideolist",[api::class, 'viewallvideolist']);
 
   Route::post("/uploadmultiples",[api::class, 'uploadmultiples']);
   Route::get("/viewallmultidata",[api::class, 'viewallmultidata']);
