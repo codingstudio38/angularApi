@@ -61,6 +61,7 @@ Route::group(['prefix'=>'/myblog/access','middleware' => 'myblogloggedin'],funct
   Route::get("/viewallmultidata",[api::class, 'viewallmultidata']);
   Route::get("/multiusersearch/{id}",[api::class, 'multiusersearch']);
   Route::post("/updatemultiples",[api::class, 'updatemultiples']);
+  Route::get("/chat-user-list",[MessageController::class, 'chatuserlist']);
   Route::get("/logout",[loginAndRegister::class, 'logout']);
 });
 
