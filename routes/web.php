@@ -1,10 +1,11 @@
 <?php
-use Illuminate\Http\Request;
+
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 use App\Http\Controllers\AngularAPI;
 use App\Http\Controllers\myBlog\loginAndRegister;
 use App\Http\Controllers\angularnewdemo\api;
-use App\Http\Controllers\myBlog\FrontendController;
+use App\Http\Controllers\MessageController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -16,11 +17,12 @@ use App\Http\Controllers\myBlog\FrontendController;
 |
 */
 Route::fallback(function(){
-   return response()->json([
-              'status' => 404,
-              'message' => "route not found..!!",
-          ],404);
+  return [
+    'status'=>200,
+    'message'=>"route not found..!!"
+  ];
 });
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -39,53 +41,29 @@ Route::get('/viewform', function () {
     return view('myform');
 });
 
-
-
-
-
-
-
- 
 //myBloge data insert,add,delete,view start ,'middleware' => 'myblog'
 Route::group(['prefix'=>'/myblog','middleware' => 'myblog'],function(){
   Route::post("/newRegister",[loginAndRegister::class, 'userRegister']);
   Route::post("/loginVerify",[loginAndRegister::class, 'loginVerify']);
-  Route::get("/homevideolist",[FrontendController::class, 'homevideolist']);
-  Route::get("/gallery",[FrontendController::class, 'gallery']);
-  Route::get("/countrylist",[FrontendController::class, 'countrylist']);
-  Route::post("/contactform",[FrontendController::class, 'contactform']);
-  Route::get("/headersearch",[FrontendController::class, 'headersearch']);
-  Route::get("/allblogdata",[FrontendController::class, 'allblogdata']);
-});
- 
-//  ,'middleware' => 'myblogloggedin'
+});  
+// ,'middleware' => 'myblogloggedin'
 Route::group(['prefix'=>'/myblog/access','middleware' => 'myblogloggedin'],function(){
-
-  Route::post("/addvideolist",[api::class, 'addvideolist']);
-  Route::get("/viewallvideolist",[api::class, 'viewallvideolist']);
-  Route::delete("/deletevideo/{id}",[api::class, 'deletevideo']);
-  Route::post("/updatevideo",[api::class, 'updatevideo']); 
   Route::post("/demotest",[api::class, 'index']);
   Route::get("/alldata",[api::class, 'viewalldata']);
   Route::get("/usersearch/{id}",[api::class, 'usersearch']);
-  Route::delete("/userdelete",[api::class, 'userdelete']);
-  Route::post("/userupdate",[api::class, 'userupdate']); 
+  Route::delete("/userdelete/{id}",[api::class, 'userdelete']);
+  Route::post("/userupdate",[api::class, 'userupdate']);
   Route::get("/viewalltbldata",[api::class, 'viewalltbldata']);
+
   Route::post("/uploadmultiples",[api::class, 'uploadmultiples']);
   Route::get("/viewallmultidata",[api::class, 'viewallmultidata']);
   Route::get("/multiusersearch/{id}",[api::class, 'multiusersearch']);
   Route::post("/updatemultiples",[api::class, 'updatemultiples']);
   Route::get("/logout",[loginAndRegister::class, 'logout']);
-  Route::get("/testpdff_data",[api::class, 'ExportPDF'])->name('pdf_export_data'); 
-  Route::get("/xl-data-expoert",[api::class, 'ExportEXCEL'])->name('excel_export_data');
-  Route::post("/delete-file",[api::class, 'DeleteFile'])->name('Delete_File');
-  Route::get("/read-xl-file",[api::class, 'readxlfile'])->name('readxlfile');
+});
 
-});  
-//myBloge data insert,add,delete,view end 
-
-
-
+ Route::get("/public-channel",[MessageController::class, 'publicchannel']);
+//myBloge data insert,add,delete,view end
  
 
 
@@ -93,6 +71,9 @@ Route::group(['prefix'=>'/myblog/access','middleware' => 'myblogloggedin'],funct
 
 
 
+
+
+  
 //newdemo data insert,add,delete,view start
 Route::group(['prefix'=>'/newdemo','middleware' => 'newdemo'],function(){
   Route::get("/viewallmultidata",[api::class, 'viewallmultidata']);
@@ -106,3 +87,9 @@ Route::group(['prefix'=>'/newdemo','middleware' => 'newdemo'],function(){
   Route::post("/userupdate",[api::class, 'userupdate']);
 });
 //newdemo data insert,add,delete,view end
+
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth'])->name('dashboard');
+
+require __DIR__.'/auth.php';
