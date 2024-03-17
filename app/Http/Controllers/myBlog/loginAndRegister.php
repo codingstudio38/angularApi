@@ -92,6 +92,8 @@ class loginAndRegister extends Controller
     }
 
     public function loginVerify(Request $request){
+         date_default_timezone_set('Asia/Kolkata');
+ 
          $loginData= myblog_register_tbl::where('email', $request->emailid)->first();
         if (!$loginData || !Hash::check($request->password, $loginData->password)) {
             return response()->json([
@@ -108,11 +110,21 @@ class loginAndRegister extends Controller
                 ]); 
                 exit;
             } else {  
-             
-                // \Auth::login(User::first());
                 $data = myblog_register_tbl::find($loginData->id);
                 $data->login_check=true;
                 $data->save();
+                User::where('userid',$data->id)->delete();
+                $userdata = array(
+                    'userid'=>$data->id,
+                    'name'=>$data->name,
+                    'email'=>$data->email,
+                    'phone'=>$data->phone,
+                    'photo'=>$data->photo,
+                    'password'=>$data->password,
+                    'created_at'=> date('Y-m-d H:i:s'),
+                );
+                 DB::table('users')->insert($userdata);
+                \Auth::login(User::where('userid',$data->id)->first());
                 return response()->json([
                     'userData'=> $data,
                     'token'=> $this->TokenController->createToken($request,$loginData->id,$loginData->email),
@@ -124,8 +136,44 @@ class loginAndRegister extends Controller
         }
     }
 
- 
-  
+
+public function ForChatLogin(Request $request){
+try{
+    $htoken = $request->header('Authorization');
+    $channel_name = $request->post('channel_name');
+    $socket_id = $request->post('socket_id');
+    $ex_token = explode(" ",$htoken);
+    if(empty($htoken)){
+    $data = array('message'=>'Unauthorized.!','status'=>401);
+    return response()->json($data, 401);
+    }
+    if(count($ex_token) > 0){ 
+        if(strpos($ex_token[1], '|')){
+            [$ex_id, $ex_token] = explode("|",$ex_token[1],2);
+            $tokendata = myblog_logindetails_tbl::where('id', $ex_id)->first();
+            if(empty($tokendata)){
+                $data = array('message'=>'Unauthorized!','status'=>401);
+                return response()->json($data, 401);
+            }
+            $user= User::where('userid',$tokendata->tokenable_id)->first();
+            $data = array('user'=>$user,'message'=>'success','status'=>200);
+            return response()->json($data, 200);
+        } else {
+            $data = array('message'=>'Unauthorized!!','status'=>401);
+            return response()->json($data, 401);
+        }
+    } else {
+        $data = array('message'=>'Unauthorized.!','status'=>401);
+        return response()->json($data, 401);
+    }
+ } catch (\Throwable $th) {
+        return response()->json([
+            'status' => 500,
+            'errors'=>$th->getMessage(),
+            'massage' => 'failed..!!',
+            ], 500);
+      }
+}
  public function logout(Request $request){
     $route = \Request::url();
     $htoken = $request->header('Authorization');

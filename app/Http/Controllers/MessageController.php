@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Events\Publicchannel;
+use Symfony\Component\HttpFoundation\Response;
 class MessageController extends Controller
 {
     public function publicchannel(Request $request) {
@@ -11,7 +12,12 @@ class MessageController extends Controller
         date_default_timezone_set('Asia/Kolkata');
         $date = date('Y-m-d H:i:s'); 
         $data = array('message'=>"hello private || $date");
-        event(new Publicchannel($data));
+        broadcast(new Publicchannel($data));
+        // event(new Publicchannel($data));
+         return response()->json([
+            'status' =>200,
+            'massage' => 'seccess.',
+            ], Response::HTTP_OK);
       } catch (\Throwable $th) {
         // return $th;
         return response()->json([

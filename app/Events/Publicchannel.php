@@ -32,7 +32,8 @@ class Publicchannel implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        // return new PrivateChannel('channel-name');
-        return new Channel('public-channel');
+        //return new PrivateChannel('channel-name');
+        // return new Channel('public-channel');
+        return new PresenceChannel('track-public-channel');
     }
 }

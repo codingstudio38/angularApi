@@ -22,6 +22,6 @@ Broadcast::channel('public-channel', function ($user) {
     // return session()->has('user') ? true : false; 
 });
 
-// Broadcast::channel('presence-public-channel', function ($user) {
-//     return $user;
-// });
+Broadcast::channel('track-public-channel', function ($user) {
+    return $user;
+});

@@ -62,10 +62,14 @@ Route::group(['prefix'=>'/myblog/access','middleware' => 'myblogloggedin'],funct
   Route::get("/multiusersearch/{id}",[api::class, 'multiusersearch']);
   Route::post("/updatemultiples",[api::class, 'updatemultiples']);
   Route::get("/chat-user-list",[MessageController::class, 'chatuserlist']);
+  Route::post("/broadcasting/auth",[loginAndRegister::class, 'ForChatLogin']);
   Route::get("/logout",[loginAndRegister::class, 'logout']);
 });
+// php artisan config:cache 
+// php artisan config:clear 
+// php artisan optimize 
 
- Route::get("/public-channel",[MessageController::class, 'publicchannel']);
+Route::get("/public-channel",[MessageController::class, 'publicchannel']);
 //myBloge data insert,add,delete,view end
  
 
