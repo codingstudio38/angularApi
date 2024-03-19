@@ -10,7 +10,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class Publicchannel implements ShouldBroadcast
+class UserPresenceChatChannel implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -30,9 +30,16 @@ class Publicchannel implements ShouldBroadcast
      *
      * @return \Illuminate\Broadcasting\Channel|array
      */
+    //  public function broadcastAs()//for broadcast as custom class name
+    // {
+    //     return 'trackUserPresenceChatChannel';
+    // }
+    //  public function broadcastWith()//for data stucture modification
+    // {
+    //     return ['custom_message'=>$this->data];
+    // }
     public function broadcastOn()
     {
-        //return new PrivateChannel('channel-name');
-        return new Channel('public-channel');
+         return new PresenceChannel('trackUserPresenceChatChannel');
     }
 }

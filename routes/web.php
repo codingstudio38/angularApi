@@ -62,14 +62,22 @@ Route::group(['prefix'=>'/myblog/access','middleware' => 'myblogloggedin'],funct
   Route::get("/multiusersearch/{id}",[api::class, 'multiusersearch']);
   Route::post("/updatemultiples",[api::class, 'updatemultiples']);
   Route::get("/chat-user-list",[MessageController::class, 'chatuserlist']);
-  // Route::post("/broadcasting/auth",[loginAndRegister::class, 'ForChatLogin']);
+  Route::post("/public-channel",[MessageController::class, 'publicchannel']);//for message send to public channel
+  Route::post("/User-Presence-Chat-Channel",[MessageController::class, 'UserPresenceChatChannel_']);//for message send to presence channel
+  Route::post("/active-user-list",[MessageController::class, 'allactiveuserPost']);// get all active user
+  Route::post("/user-disconnected",[MessageController::class, 'userdisconnected']);
+  Route::post("/user-connected",[MessageController::class, 'userconnected']);
   Route::get("/logout",[loginAndRegister::class, 'logout']);
 });
 // php artisan config:cache 
 // php artisan config:clear 
 // php artisan optimize 
-
+//http://127.0.0.1:8000/public-channel
+//http://127.0.0.1:8000/User-Presence-Chat-Channel
+//http://127.0.0.1:8000/active-user-list?channelname=presence-trackUserPresenceChatChannel
 Route::get("/public-channel",[MessageController::class, 'publicchannel']);
+Route::get("/User-Presence-Chat-Channel",[MessageController::class, 'UserPresenceChatChannel_']);
+Route::get("/active-user-list",[MessageController::class, 'allactiveuserGet']);
 //myBloge data insert,add,delete,view end
  
 
