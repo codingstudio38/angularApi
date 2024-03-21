@@ -328,7 +328,7 @@ public function savenewmessage(Request $request) {
           } 
         DB::commit();
         $data= Userchats::find($newid);
-        $chatdata = array('messageinfo'=>array('message'=>'new message','code'=>100),'data'=>$data);
+        $chatdata = array('datainfo'=>array('message'=>'new message','code'=>100),'data'=>$data);
         broadcast(new UserPresenceChatChannel($chatdata));
         return response()->json(['status' => 200,'message' => 'success..',"data"=>$data], 200);
       } catch (\Throwable $th) {
