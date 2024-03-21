@@ -8,7 +8,7 @@ use App\Events\UserPresenceChatChannel;
 use Symfony\Component\HttpFoundation\Response;
 Use Pusher\Pusher;
 use App\Models\User;
-
+use App\Models\myBlog\Userchats;
 class MessageController extends Controller
 {
     public function publicchannel(Request $request) {
@@ -215,5 +215,133 @@ public function allactiveuserPost(Request $request) {
        
     }
 
+  public function userchatlist(Request $request) {
+      try {
+        $from_=$request->post('from');
+        $to_=$request->post('to');
+        $validator = \Validator::make($request->all(),
+        [
+            'from' => 'required',
+            'to' => 'required',
+        ],
+        [ 
+         "from.required" => "from id required.",
+         "to.required" => "to id required.",
+        ]
+      );
+        if ($validator->fails())
+        {
+            return response()->json(['status' => 400,'massage' => 'invalid data format!',"errors"=>$validator->errors()],200);
+        }
+      
+       
+        $data= Userchats::where('from_',$from_)->where('to_',$to_)->orWhere('from_',$from_)->where('to_',$to_)->get();
+       
+        return response()->json(['status' => 200,'message' => 'success..',"data"=>$data], 200);
+      } catch (\Throwable $th) {
+        return response()->json([
+            'status' => 500,
+            'errors'=>$th->getMessage(),
+            'message' => 'failed..!!',
+            ], 500);
+      }
+       
+    }
+
+ public function getuserchatbyid(Request $request) {
+      try {
+        $id=$request->post('id');
+        $validator = \Validator::make($request->all(),
+        [
+            'id' => 'required',
+        ],
+        [ 
+         "id.required" => "id required.",
+        ]
+      );
+        if ($validator->fails())
+        {
+           return response()->json(['status' => 400,'massage' => 'invalid data format!',"errors"=>$validator->errors()],200);
+        }
+      
+       
+        $dataQr = Userchats::where('id',$id);
+        $totaldata = $dataQr->count();
+        $data = $dataQr->first();
+       
+        return response()->json(['status' => 200,'message' => 'success..',"data"=>$data,'total'=>$totaldata], 200);
+      } catch (\Throwable $th) {
+        return response()->json([
+            'status' => 500,
+            'errors'=>$th->getMessage(),
+            'message' => 'failed..!!',
+            ], 500);
+      }
+       
+    }
+
+
+
+public function savenewmessage(Request $request) {
+      try {
+        date_default_timezone_set('Asia/Kolkata');
+        $from_=$request->post('from');
+        $to_=$request->post('to');
+        $message=$request->post('message');
+        $chat_type=$request->post('chat_type');//single_chat_group_chat/0=single,1=group
+        $validator = \Validator::make($request->all(),
+        [
+            'from' => 'required',
+            'to' => 'required',
+            'chat_type' => 'required',
+            'message' => 'required',
+        ],
+        [ 
+         "from.required" => "from id required.",
+         "to.required" => "to id required.",
+          "chat_type.required" => "chat type required.",
+          "message.required" => "message required.",
+        ]
+      );
+        if ($validator->fails())
+        {
+            return response()->json(['status' => 400,'massage' => $validator->errors()],200);
+        }
+     
+ 
+       $inserData=array(
+          'from_' => $from_,
+          'to_' => $to_,
+          'chat_type' =>$chat_type,
+          'message' =>$message,
+       );
+        DB::beginTransaction(); 
+        $newid= DB::table('user_chat_tbl')->insertGetId($inserData);
+         if($request->hasFile('chat_file')) {
+              $fileName = $request->file('chat_file')->getClientOriginalName();
+              $file_extension = $request->file('chat_file')->extension();
+              $file_size = $request->file('chat_file')->getSize();
+              $file_Newname = rand(11111, 99999)."_".$file_size.".".$file_extension;
+              if($request->file('chat_file')->move('myBlog/uploadFiles',$file_Newname)){
+                 DB::table('user_chat_tbl')->update(array('chat_file'=>$file_Newname));
+              }
+          } 
+        DB::commit();
+        $data= Userchats::find($newid);
+        $chatdata = array('messageinfo'=>array('message'=>'new message','code'=>100),'data'=>$data);
+        broadcast(new UserPresenceChatChannel($chatdata));
+        return response()->json(['status' => 200,'message' => 'success..',"data"=>$data], 200);
+      } catch (\Throwable $th) {
+         DB::rollback();
+        return response()->json([
+            'status' => 500,
+            'errors'=>$th->getMessage(),
+            'message' => 'failed..!!',
+            ], 500);
+      }
+       
+    }
+
+ 
 
 }

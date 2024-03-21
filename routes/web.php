@@ -48,7 +48,7 @@ Route::group(['prefix'=>'/myblog','middleware' => 'myblog'],function(){
 });  
 
 // ,'middleware' => 'myblogloggedin'
-Route::group(['prefix'=>'/myblog/access','middleware' => 'myblogloggedin'],function(){
+Route::group(['prefix'=>'/myblog/access'],function(){
   Route::post("/demotest",[api::class, 'index']);
   Route::get("/alldata",[api::class, 'viewalldata']);
   Route::get("/usersearch/{id}",[api::class, 'usersearch']);
@@ -67,6 +67,9 @@ Route::group(['prefix'=>'/myblog/access','middleware' => 'myblogloggedin'],funct
   Route::post("/active-user-list",[MessageController::class, 'allactiveuserPost']);// get all active user
   Route::post("/user-disconnected",[MessageController::class, 'userdisconnected']);
   Route::post("/user-connected",[MessageController::class, 'userconnected']);
+  Route::post("/user-chat-list",[MessageController::class, 'userchatlist']);
+  Route::post("/get-user-chat-by-id",[MessageController::class, 'getuserchatbyid']);
+  Route::post("/save-new-message",[MessageController::class, 'savenewmessage']);
   Route::get("/logout",[loginAndRegister::class, 'logout']);
 });
 // php artisan config:cache 
