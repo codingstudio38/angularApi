@@ -235,9 +235,11 @@ public function allactiveuserPost(Request $request) {
         }
       
        
-        $data= Userchats::where('from_',$from_)->where('to_',$to_)->orWhere('from_',$from_)->where('to_',$to_)->get();
+        $dataQr= Userchats::where('from_',$from_)->where('to_',$to_)->orWhere('from_',$to_)->where('to_',$from_);
+        $totaldata= $dataQr->count();
+        $data= $dataQr->get();
        
-        return response()->json(['status' => 200,'message' => 'success..',"data"=>$data], 200);
+        return response()->json(['status' => 200,'message' => 'success..',"data"=>$data,'total'=>$totaldata], 200);
       } catch (\Throwable $th) {
         return response()->json([
             'status' => 500,
