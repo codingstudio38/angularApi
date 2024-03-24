@@ -237,7 +237,7 @@ public function allactiveuserPost(Request $request) {
        
         $dataQr= Userchats::where('from_',$from_)->where('to_',$to_)->orWhere('from_',$to_)->where('to_',$from_);
         $totaldata= $dataQr->count();
-        $data= $dataQr->get();
+        $data= $dataQr->orderBy('id','asc')->get();
        
         return response()->json(['status' => 200,'message' => 'success..',"data"=>$data,'total'=>$totaldata], 200);
       } catch (\Throwable $th) {
@@ -328,11 +328,12 @@ public function savenewmessage(Request $request) {
                  DB::table('user_chat_tbl')->update(array('chat_file'=>$file_Newname));
               }
           } 
+        $dataIs= DB::table('user_chat_tbl')->where('id',$newid)->first();
+        $datainfo = array('message'=>'new message','code'=>100);// for identify data type
+        $dataset = array("datainfo"=>$datainfo,"data"=>$dataIs);// dataset must be 2 key values
+        SendBroadcastDataOnPresenceChannel($dataset);
         DB::commit();
-        $data= Userchats::find($newid);
-        $chatdata = array('datainfo'=>array('message'=>'new message','code'=>100),'data'=>$data);
-        broadcast(new UserPresenceChatChannel($chatdata));
-        return response()->json(['status' => 200,'message' => 'success..',"data"=>$data], 200);
+        return response()->json(['status' => 200,'message' => 'success..',"data"=>$dataIs], 200);
       } catch (\Throwable $th) {
          DB::rollback();
         return response()->json([
