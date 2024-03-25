@@ -70,6 +70,8 @@ Route::group(['prefix'=>'/myblog/access'],function(){
   Route::post("/user-chat-list",[MessageController::class, 'userchatlist']);
   Route::post("/get-user-chat-by-id",[MessageController::class, 'getuserchatbyid']);
   Route::post("/save-new-message",[MessageController::class, 'savenewmessage']);
+  Route::post("/update-chat-read-status",[MessageController::class, 'updatechatreadstatus']);
+  Route::post("/get-no-of-unseen-chat",[MessageController::class, 'getnoofunseenchat']); 
   Route::get("/logout",[loginAndRegister::class, 'logout']);
 });
 // php artisan config:cache 

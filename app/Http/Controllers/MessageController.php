@@ -61,7 +61,7 @@ class MessageController extends Controller
         if(!empty($name)){
           $dataQr->where('name','LIKE',"%$name%");
         }
-        $data=$dataQr->get();
+        $data=$dataQr->orderBy('name','asc')->get();
            return response()->json([
             'status' => 200,
             'errors'=>[],
@@ -125,6 +125,7 @@ public function allactiveuserGet(Request $request) {
 public function allactiveuserPost(Request $request) {
       try {
         $channelname=$request->post('channelname');
+        $userdata = array();
         if(empty($channelname)){
            return response()->json([
             'status' => 400,
@@ -146,13 +147,29 @@ public function allactiveuserPost(Request $request) {
         foreach ($users as $key => $value) {
           array_push($userid,$value->id);
         }
-        $user= count($userid)>0? User::whereIn('id',$userid)->get():array();
+      $struserid = implode(',',$userid);
+      $user_id= count($userid)>0? DB::select(
+          "select GROUP_CONCAT(userid) as alluser_ids from users where id in($struserid)"
+        ):array();
+        if(count($user_id) > 0){
+          if(!empty($user_id[0]->alluser_ids)){
+              DB::beginTransaction(); 
+              DB::table('myblog_register_tbl')->whereIn('id',explode(",",$user_id[0]->alluser_ids))->update(array('online_status'=>1));
+              DB::table('myblog_register_tbl')->whereNotIn('id',explode(",",$user_id[0]->alluser_ids))->update(array('online_status'=>0));
+              DB::commit();
+              $userdata = DB::table('myblog_register_tbl')->whereIn('id',explode(",",$user_id[0]->alluser_ids))->get();
+          }
+        }
+      // $user= count($userid)>0? User::select(
+      //      DB::raw("(select GROUP_CONCAT(userid) from users where id in($struserid)) as alluser_ids")
+      //   )->whereIn('id',$userid)->first():array();
           return response()->json([
             'status' => 200,
             'message' => 'sucess.',
-            'users'=>$user,
+            'users'=>$userdata,
             ], 200);
       } catch (\Throwable $th) {
+         DB::rollback();
         return response()->json([
             'status' => 500,
             'errors'=>$th->getMessage(),
@@ -234,13 +251,95 @@ public function allactiveuserPost(Request $request) {
             return response()->json(['status' => 400,'massage' => 'invalid data format!',"errors"=>$validator->errors()],200);
         }
       
-       
+
+        DB::beginTransaction(); 
+        DB::table('user_chat_tbl')->orWhere('from_',$to_)->where('to_',$from_)->update(array('read_status'=>1));
         $dataQr= Userchats::where('from_',$from_)->where('to_',$to_)->orWhere('from_',$to_)->where('to_',$from_);
         $totaldata= $dataQr->count();
         $data= $dataQr->orderBy('id','asc')->get();
-       
+        DB::commit();
+
         return response()->json(['status' => 200,'message' => 'success..',"data"=>$data,'total'=>$totaldata], 200);
       } catch (\Throwable $th) {
+         DB::rollback();
+        return response()->json([
+            'status' => 500,
+            'errors'=>$th->getMessage(),
+            'message' => 'failed..!!',
+            ], 500);
+      }
+       
+    }
+
+  public function updatechatreadstatus(Request $request) {
+      try {
+        $from_=$request->post('from');
+        $to_=$request->post('to');
+        $id=$request->post('id');
+        $validator = \Validator::make($request->all(),
+        [
+            'from' => 'required',
+            'to' => 'required',
+            'id' => 'required',
+        ],
+        [ 
+          "from.required" => "from id required.",
+          "to.required" => "to id required.",
+          "id.required" => "id required.",
+        ]
+      );
+        if ($validator->fails())
+        {
+            return response()->json(['status' => 400,'massage' => 'invalid data format!',"errors"=>$validator->errors()],200);
+        }
+      
+
+        DB::beginTransaction(); 
+        DB::table('user_chat_tbl')->where('id',$id)->update(array('read_status'=>1));
+        $data = DB::table('user_chat_tbl')->where('id',$id)->first();
+        DB::commit();
+
+        return response()->json(['status' => 200,'message' => 'success..',"data"=>$data], 200);
+      } catch (\Throwable $th) {
+         DB::rollback();
+        return response()->json([
+            'status' => 500,
+            'errors'=>$th->getMessage(),
+            'message' => 'failed..!!',
+            ], 500);
+      }
+       
+    }
+
+  public function getnoofunseenchat(Request $request) {
+      try {
+        $from_=$request->post('from');
+        $to_=$request->post('to');
+        $validator = \Validator::make($request->all(),
+        [
+            'from' => 'required',
+            'to' => 'required',
+        ],
+        [ 
+          "from.required" => "from id required.",
+          "to.required" => "to id required.",
+        ]
+      );
+        if ($validator->fails())
+        {
+            return response()->json(['status' => 400,'massage' => 'invalid data format!',"errors"=>$validator->errors()],200);
+        }
+      
+
+        DB::beginTransaction(); 
+        $dataQr = DB::table('user_chat_tbl')->where('from_',$from_)->where('to_',$to_)->where('read_status',0)->orderBy('id','desc');
+        $totaldata=$dataQr->count();
+        $data=$dataQr->first();
+        DB::commit();
+
+        return response()->json(['status' => 200,'message' => 'success..',"data"=>$data,'total'=>$totaldata], 200);
+      } catch (\Throwable $th) {
+         DB::rollback();
         return response()->json([
             'status' => 500,
             'errors'=>$th->getMessage(),
