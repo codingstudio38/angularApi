@@ -57,11 +57,26 @@ class MessageController extends Controller
       public function chatuserlist(Request $request) {
       try {
         $name=$request->get('name');
-        $dataQr= DB::table('myblog_register_tbl');
-        if(!empty($name)){
-          $dataQr->where('name','LIKE',"%$name%");
+        $current_loggedin_user=$request->get('current_loggedin_user');
+        if($current_loggedin_user==""){
+          return response()->json([
+            'status' => 400,
+            'message' => 'failed!! current loggedin user id required.',
+          ], 200);
         }
-        $data=$dataQr->orderBy('name','asc')->get();
+        $dataQr= DB::table('myblog_register_tbl as U');
+        $dataQr->select(
+          'U.*',
+          DB::raw("(SELECT JSON_OBJECT( 'id', chat.id, 'chat_type', chat.chat_type, 'from_', chat.from_, 'to_', chat.to_, 'message', chat.message, 'chat_file', chat.chat_file, 'read_status', chat.read_status, 'created_at', chat.created_at, 'updated_at', chat.updated_at ) FROM myblog_register_tbl as user join user_chat_tbl as chat on user.id = chat.from_ WHERE chat.from_=U.id AND chat.to_='$current_loggedin_user' AND chat.read_status = 0 order by chat.id desc LIMIT 1) AS chat_data"),//for 1 record
+
+          DB::raw("(SELECT count(chat.id) FROM myblog_register_tbl as user join user_chat_tbl as chat on user.id = chat.from_ WHERE chat.from_=U.id AND chat.to_='$current_loggedin_user' AND chat.read_status = 0  GROUP BY user.id order by chat.id desc) as total_unsceen")
+            // DB::raw("(SELECT CONCAT('[', GROUP_CONCAT(JSON_OBJECT('id', chat.id, 'chat_type', chat.chat_type, 'from_', chat.from_, 'to_', chat.to_, 'message', chat.message, 'chat_file', chat.chat_file, 'read_status', chat.read_status, 'created_at', chat.created_at, 'updated_at', chat.updated_at)), ']') FROM myblog_register_tbl as user join user_chat_tbl as chat on user.id = chat.from_ WHERE chat.from_=U.id AND chat.to_='$current_loggedin_user' AND chat.read_status = 0  GROUP BY user.id order by chat.id desc) as chat_data")//for all records
+        );
+        $dataQr->where('U.id','!=',$current_loggedin_user);
+        if(!empty($name)){
+          $dataQr->where('U.name','LIKE',"%$name%");
+        }
+        $data=$dataQr->orderBy('U.name','asc')->get();
            return response()->json([
             'status' => 200,
             'errors'=>[],
