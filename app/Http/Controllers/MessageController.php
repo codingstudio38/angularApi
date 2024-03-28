@@ -251,6 +251,8 @@ public function allactiveuserPost(Request $request) {
       try {
         $from_=$request->post('from');
         $to_=$request->post('to');
+        $page=empty($request->get('page'))?1:$request->get('page');
+        $limit=empty($request->get('limit'))?10:$request->get('limit');
         $validator = \Validator::make($request->all(),
         [
             'from' => 'required',
@@ -269,9 +271,13 @@ public function allactiveuserPost(Request $request) {
 
         DB::beginTransaction(); 
         DB::table('user_chat_tbl')->orWhere('from_',$to_)->where('to_',$from_)->update(array('read_status'=>1));
-        $dataQr= Userchats::where('from_',$from_)->where('to_',$to_)->orWhere('from_',$to_)->where('to_',$from_);
+        $dataQr= Userchats::select('id','chat_type','from_','to_','message','chat_file','read_status',
+        DB::raw("concat_ws(' ',DATE(updated_at),time_format(updated_at,'%H:%i:%s')) as updated_date"),
+         DB::raw("concat_ws(' ',DATE(created_at),time_format(created_at,'%H:%i:%s')) as created_date"),
+        )
+        ->where('from_',$from_)->where('to_',$to_)->orWhere('from_',$to_)->where('to_',$from_);
         $totaldata= $dataQr->count();
-        $data= $dataQr->orderBy('id','asc')->get();
+        $data= $dataQr->orderBy('id','desc')->paginate($limit);
         DB::commit();
 
         return response()->json(['status' => 200,'message' => 'success..',"data"=>$data,'total'=>$totaldata], 200);
