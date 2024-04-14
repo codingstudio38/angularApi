@@ -57,6 +57,8 @@ Route::group(['prefix'=>'/myblog/access','middleware' => 'myblogloggedin'],funct
   Route::get("/viewalltbldata",[api::class, 'viewalltbldata']);
   Route::get("/viewallvideolist",[api::class, 'viewallvideolist']);
   Route::get("/testpdff_data",[api::class, 'ExportPDF']);
+  Route::get("/xl-data-expoert",[api::class, 'ExportEXCEL']);
+  Route::post("/delete-file",[api::class, 'DeleteFile']);
   Route::post("/uploadmultiples",[api::class, 'uploadmultiples']);
   Route::get("/viewallmultidata",[api::class, 'viewallmultidata']);
   Route::get("/multiusersearch/{id}",[api::class, 'multiusersearch']);
