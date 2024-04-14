@@ -48,7 +48,7 @@ Route::group(['prefix'=>'/myblog','middleware' => 'myblog'],function(){
 });  
 
 // ,'middleware' => 'myblogloggedin'
-Route::group(['prefix'=>'/myblog/access'],function(){
+Route::group(['prefix'=>'/myblog/access','middleware' => 'myblogloggedin'],function(){
   Route::post("/demotest",[api::class, 'index']);
   Route::get("/alldata",[api::class, 'viewalldata']);
   Route::get("/usersearch/{id}",[api::class, 'usersearch']);
@@ -56,7 +56,7 @@ Route::group(['prefix'=>'/myblog/access'],function(){
   Route::post("/userupdate",[api::class, 'userupdate']);
   Route::get("/viewalltbldata",[api::class, 'viewalltbldata']);
   Route::get("/viewallvideolist",[api::class, 'viewallvideolist']);
-
+  Route::get("/testpdff_data",[api::class, 'ExportPDF']);
   Route::post("/uploadmultiples",[api::class, 'uploadmultiples']);
   Route::get("/viewallmultidata",[api::class, 'viewallmultidata']);
   Route::get("/multiusersearch/{id}",[api::class, 'multiusersearch']);
@@ -77,6 +77,8 @@ Route::group(['prefix'=>'/myblog/access'],function(){
 // php artisan config:cache 
 // php artisan config:clear 
 // php artisan optimize 
+// php artisan route:clear
+// php artisan route:cache
 //http://127.0.0.1:8000/public-channel
 //http://127.0.0.1:8000/User-Presence-Chat-Channel
 //http://127.0.0.1:8000/active-user-list?channelname=presence-trackUserPresenceChatChannel
